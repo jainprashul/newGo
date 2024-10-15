@@ -3,8 +3,8 @@ package db
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"os"
 )
 
 const path = "./db/data/"
@@ -23,6 +23,12 @@ func CreateDB(name string) DB {
 		DBs = make(map[string]DB)
 	}
 
+	// Check if the DB already exists
+	if _, ok := DBs[name]; ok {
+		return DBs[name]
+	}
+
+	// Create a new DB
 	db := DB{Name: name}
 	DBs[name] = db
 	return db
@@ -40,9 +46,23 @@ func GetDB(name string) (DB, error) {
 			return db, nil
 		}
 	}
-	return DB{}, errors.New("DB not found")
+	return DB{}, fmt.Errorf("DB not found")
 }
 
+// Method to initialize a DB
+func (db DB) InitDB() error {
+	fileName := path + db.Name + ext
+
+	// Check if the file exists or not and create a new file if it does not exist with an empty array of data
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		err = WriteJsonFile(fileName, []byte("[]"))
+		if err != nil {
+			fmt.Printf("Error Writing to file: %v\n", err)
+			return err
+		}
+	}
+	return nil
+}
 
 // Method to add data to a DB
 func (db DB) AddData(data interface{}) error {
@@ -50,7 +70,7 @@ func (db DB) AddData(data interface{}) error {
 	structType := data
 	jsonData, err := json.Marshal(structType)
 	if err != nil {
-		fmt.Errorf("Error Marshalling data: %s", err)
+		return fmt.Errorf("error marshalling data: %s", err)
 	}
 
 	// Write to a json file
@@ -86,13 +106,15 @@ func (db DB) GetAll(data interface{}) (error) {
 
 
 // Method to delete data from a DB
-func (db DB) DeleteData(data interface{}) {
+func (db DB) DeleteData(data *interface{}) error {
 	// Delete data from a DB
-	structType := data
-	jsonData, err := json.Marshal(structType)
+
+	jsonData, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println(err)
+		return err
 	}
 	DeleteJsonFile(db.Name)
 	WriteJsonFile(db.Name, jsonData)
+	return nil
 }
