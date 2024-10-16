@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
+// Constants for the path and extension of the file
 const path = "./db/data/"
 const ext = ".json"
 
@@ -51,7 +53,9 @@ func GetDB(name string) (DB, error) {
 
 // Method to initialize a DB
 func (db DB) InitDB() error {
-	fileName := path + db.Name + ext
+
+
+	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name + ext)
 
 	// Check if the file exists or not and create a new file if it does not exist with an empty array of data
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
@@ -74,7 +78,7 @@ func (db DB) AddData(data interface{}) error {
 	}
 
 	// Write to a json file
-	fileName := path + db.Name + ext
+	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name + ext)
 
 	err = WriteJsonFile(fileName, jsonData)
 
@@ -88,8 +92,8 @@ func (db DB) AddData(data interface{}) error {
 // GetAll retrieves all records from the database and unmarshals them into the provided slice.
 func (db DB) GetAll(data interface{}) (error) {
 	// Get data from a DB
-	fileName := path + db.Name + ext
-
+	
+	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name + ext)
 	jsonData, err := ReadJsonFile(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -117,4 +121,13 @@ func (db DB) DeleteData(data *interface{}) error {
 	DeleteJsonFile(db.Name)
 	WriteJsonFile(db.Name, jsonData)
 	return nil
+}
+
+func GetCurrentWorkingDirectory() string {
+    // Get the current working directory
+    dir, err := os.Getwd()
+    if err != nil {
+        fmt.Println("Error:", err)
+    }
+	return dir
 }
