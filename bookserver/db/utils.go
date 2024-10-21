@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 // function to read a json file
@@ -13,17 +14,29 @@ func ReadJsonFile(fileName string) ([]byte, error) {
 	data , err :=  os.ReadFile(fileName)
 
 	if err != nil {
-		log.Println(err)
+		log.Println("Error reading file", err)
 	}
 	return data , err
 }
 
 // function to write to a json file
 func WriteJsonFile(fileName string, data []byte) error {
+	// Split the file name and the path
+	dirName := filepath.Dir(fileName)
+	// Check if the directory exists or not
+	if _, err := os.Stat(dirName); os.IsNotExist(err) {
+		// Create the directory if it does not exist
+		err := os.MkdirAll(dirName, 0777)
+		if err != nil {
+			log.Println("Error creating directory", err)
+			return err
+		}
+	}
+
 	// Write to a json file
 	err := os.WriteFile(fileName, data, 0666)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error writing to file", err)
 		return err
 	}
 	return nil
@@ -35,7 +48,7 @@ func DeleteJsonFile(fileName string) {
 	// Delete a json file
 	err := os.Remove(fileName)
 	if err != nil {
-		log.Println(err)
+		log.Println("Error deleting file", err)
 	}
 }
 

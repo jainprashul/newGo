@@ -9,7 +9,7 @@ import (
 )
 
 // Constants for the path and extension of the file
-const path = "./db/data/"
+const path = "./data/"
 const ext = ".json"
 
 type DB struct {
@@ -54,17 +54,19 @@ func GetDB(name string) (DB, error) {
 // Method to initialize a DB
 func (db DB) InitDB() error {
 
-
 	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name + ext)
 
 	// Check if the file exists or not and create a new file if it does not exist with an empty array of data
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		err = WriteJsonFile(fileName, []byte("[]"))
+		fmt.Println("File does not exist")
+		// Create a new file
+		err = WriteJsonFile(fileName, []byte("[]"))	
 		if err != nil {
-			fmt.Printf("Error Writing to file: %v\n", err)
+			fmt.Println(err)
 			return err
 		}
 	}
+
 	return nil
 }
 
