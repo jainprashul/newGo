@@ -14,12 +14,12 @@ type Indentifiable interface {
 	SetID(string)
 }
 
-type RouteService [T Indentifiable] struct {
+type RouteService[T Indentifiable] struct {
 	// RouteService
-	db db.DB
+	db db.FileDB
 }
 
-func NewRouteService[C Indentifiable](db db.DB) *RouteService [C] {
+func NewRouteService[C Indentifiable](db db.FileDB) *RouteService[C] {
 	// NewRouteService
 	return &RouteService[C]{
 		db: db,
@@ -28,15 +28,14 @@ func NewRouteService[C Indentifiable](db db.DB) *RouteService [C] {
 
 func (r *RouteService[C]) getAll(w http.ResponseWriter, _ *http.Request) {
 	var data []C
-	 err := r.db.GetAll(&data)
+	err := r.db.GetAll(&data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return;
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
 }
-
 
 func (r *RouteService[C]) get(w http.ResponseWriter, req *http.Request) {
 	var data []C
@@ -54,7 +53,7 @@ func (r *RouteService[C]) get(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	for _, d := range (data) {
+	for _, d := range data {
 		if d.GetID() == id {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(d)
@@ -64,7 +63,6 @@ func (r *RouteService[C]) get(w http.ResponseWriter, req *http.Request) {
 
 	http.Error(w, "Data not found", http.StatusNotFound)
 }
-
 
 func (r *RouteService[C]) add(w http.ResponseWriter, req *http.Request) {
 	var data C
@@ -78,7 +76,7 @@ func (r *RouteService[C]) add(w http.ResponseWriter, req *http.Request) {
 
 	data.SetID(r.db.Name + "-" + uuid.NewString())
 
-	var dataList[]C
+	var dataList []C
 	err = r.db.GetAll(&dataList)
 
 	if err != nil {
@@ -92,7 +90,7 @@ func (r *RouteService[C]) add(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return	
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -113,7 +111,7 @@ func (r *RouteService[C]) delete(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return 
+		return
 	}
 
 	for i, d := range data {
@@ -127,11 +125,9 @@ func (r *RouteService[C]) delete(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return 
+		return
 	}
 }
-
-
 
 func (r *RouteService[C]) update(w http.ResponseWriter, req *http.Request) {
 	id := mux.Vars(req)["id"]
@@ -147,7 +143,7 @@ func (r *RouteService[C]) update(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return 
+		return
 	}
 
 	print(id)
@@ -172,12 +168,11 @@ func (r *RouteService[C]) update(w http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return 
+		return
 	}
 }
 
-
-func (r *RouteService[C]) GetDB() *db.DB {
+func (r *RouteService[C]) GetDB() *db.FileDB {
 	r.db.InitDB()
 	return &r.db
 }
@@ -186,7 +181,6 @@ func (r *RouteService[C]) GetRouter() *mux.Router {
 	path := "/" + r.db.Name
 	return Router.PathPrefix(path).Subrouter().StrictSlash(true)
 }
-
 
 func (r *RouteService[C]) InitService() {
 	r.db.InitDB()

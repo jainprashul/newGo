@@ -12,54 +12,54 @@ import (
 const path = "./data/"
 const ext = ".json"
 
-type DB struct {
+type FileDB struct {
 	Name string
 }
 
-var DBs map[string]DB
+var FileDatabaseMap map[string]FileDB
 
-func CreateDB(name string) DB {
+func CreateDB(name string) FileDB {
 	// Create a DB
 	// Check if DBs is nil
-	if DBs == nil {
-		DBs = make(map[string]DB)
+	if FileDatabaseMap == nil {
+		FileDatabaseMap = make(map[string]FileDB)
 	}
 
 	// Check if the DB already exists
-	if _, ok := DBs[name]; ok {
-		return DBs[name]
+	if _, ok := FileDatabaseMap[name]; ok {
+		return FileDatabaseMap[name]
 	}
 
 	// Create a new DB
-	db := DB{Name: name}
-	DBs[name] = db
+	db := FileDB{Name: name}
+	FileDatabaseMap[name] = db
 	return db
 }
 
 func DeleteDB(name string) {
 	// Delete a DB
-	delete(DBs, name)
+	delete(FileDatabaseMap, name)
 }
 
-func GetDB(name string) (DB, error) {
+func GetDB(name string) (FileDB, error) {
 	// Get a DB
-	for _, db := range DBs {
+	for _, db := range FileDatabaseMap {
 		if db.Name == name {
 			return db, nil
 		}
 	}
-	return DB{}, fmt.Errorf("DB not found")
+	return FileDB{}, fmt.Errorf("DB not found")
 }
 
 // Method to initialize a DB
-func (db DB) InitDB() error {
+func (db FileDB) InitDB() error {
 
-	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name + ext)
+	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name+ext)
 
 	// Check if the file exists or not and create a new file if it does not exist with an empty array of data
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		// Create a new file
-		err = WriteJsonFile(fileName, []byte("[]"))	
+		err = WriteJsonFile(fileName, []byte("[]"))
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -70,7 +70,7 @@ func (db DB) InitDB() error {
 }
 
 // Method to add data to a DB
-func (db DB) AddData(data interface{}) error {
+func (db FileDB) AddData(data interface{}) error {
 	// Add data to a DB
 	structType := data
 	jsonData, err := json.Marshal(structType)
@@ -79,7 +79,7 @@ func (db DB) AddData(data interface{}) error {
 	}
 
 	// Write to a json file
-	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name + ext)
+	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name+ext)
 
 	err = WriteJsonFile(fileName, jsonData)
 
@@ -91,10 +91,10 @@ func (db DB) AddData(data interface{}) error {
 }
 
 // GetAll retrieves all records from the database and unmarshals them into the provided slice.
-func (db DB) GetAll(data interface{}) (error) {
+func (db FileDB) GetAll(data interface{}) error {
 	// Get data from a DB
-	
-	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name + ext)
+
+	fileName := filepath.Join(GetCurrentWorkingDirectory(), path, db.Name+ext)
 	jsonData, err := ReadJsonFile(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -108,10 +108,8 @@ func (db DB) GetAll(data interface{}) (error) {
 	return nil
 }
 
-
-
 // Method to delete data from a DB
-func (db DB) DeleteData(data *interface{}) error {
+func (db FileDB) DeleteData(data *interface{}) error {
 	// Delete data from a DB
 
 	jsonData, err := json.Marshal(data)
@@ -125,10 +123,10 @@ func (db DB) DeleteData(data *interface{}) error {
 }
 
 func GetCurrentWorkingDirectory() string {
-    // Get the current working directory
-    dir, err := os.Getwd()
-    if err != nil {
-        fmt.Println("Error:", err)
-    }
+	// Get the current working directory
+	dir, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error:", err)
+	}
 	return dir
 }
