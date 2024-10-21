@@ -58,7 +58,6 @@ func (db DB) InitDB() error {
 
 	// Check if the file exists or not and create a new file if it does not exist with an empty array of data
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		fmt.Println("File does not exist")
 		// Create a new file
 		err = WriteJsonFile(fileName, []byte("[]"))	
 		if err != nil {
