@@ -4,12 +4,14 @@ package models
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // User struct
 type User struct {
-	// ID
-	ID int `json:"id"`
+	gorm.Model
+	ID string `json:"id"`
 	// Name
 	Name string `json:"name"`
 	// Email
@@ -20,6 +22,15 @@ type User struct {
 	CreatedAt time.Time `json:"created_at"`
 	// UpdatedAt
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+
+func (u User) GetID() string {
+	return string(u.ID)
+}
+
+func (u *User) SetID(id string) {
+	u.ID = id
 }
 
 // UserResponse struct

@@ -4,17 +4,23 @@ import (
 	"fmt"
 	"net/http"
 
+	"xpJain.co/bookserver/db"
 	"xpJain.co/bookserver/server"
 )
 
 
 
 func main() {
+
+	// Initialize the database
+	db.InitializeDB()
+
 	// Create a new router
 	router := server.Router
 
+
 	// Initialize the book route
-	server.BookRouteInit();
+	server.BookRouteInitize()
 
 
 	// Start the server
