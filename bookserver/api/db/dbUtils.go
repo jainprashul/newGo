@@ -21,7 +21,7 @@ var DBServerInstance *DBServer
 
 func InitializeDB() {
 	// Connect to the database
-	ConnectionStr := "host=localhost user=postgres password=password dbname=bookstore port=5432 sslmode=disable TimeZone=Asia/Calcutta"
+	ConnectionStr := "host=db user=bookuser password=test2020 dbname=bookdb port=5432 sslmode=disable TimeZone=Asia/Calcutta"
 	db , err := gorm.Open(postgres.Open(ConnectionStr), &gorm.Config{})
 
 	if err != nil {

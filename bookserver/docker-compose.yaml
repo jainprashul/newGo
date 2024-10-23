@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  bookserver:
+    build: ./api
+    depends_on:
+      db:
+        condition: service_healthy
+      
+    
+  db:
+    image: postgres
+    restart: always
+    
+    environment:
+      POSTGRES_USER: bookuser
+      POSTGRES_PASSWORD: test2020
+      POSTGRES_DB: bookdb
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bookuser -d bookdb"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    
+    
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: xptest@test.co
+      PGADMIN_DEFAULT_PASSWORD: test2020
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  proxy:
+    image: nginx
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - bookserver
+      - pgadmin
+
+volumes:
+  db-data:
+  
+
+    
+    
