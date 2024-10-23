@@ -18,7 +18,7 @@ type FileDB struct {
 
 var FileDatabaseMap map[string]FileDB
 
-func CreateDB(name string) FileDB {
+func CreateFileDB(name string) FileDB {
 	// Create a DB
 	// Check if DBs is nil
 	if FileDatabaseMap == nil {
