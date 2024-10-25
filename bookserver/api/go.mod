@@ -7,6 +7,7 @@ replace xpJain.co/bookserver v0.0.0 => ./
 require github.com/gorilla/mux v1.8.1
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12

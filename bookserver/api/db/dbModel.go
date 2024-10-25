@@ -56,6 +56,17 @@ func (m *DBModel[T]) Get(id string) (T, error) {
 	return object, nil
 }
 
+func (m *DBModel[T]) GetByField(field string, value string) (T, error) {
+	var object T
+	db := GetDBServerInstance().GetDB()
+	result := db.Table(m.GetTableName()).Where(field+" = ?", value).First(&object)
+	if result.Error != nil {
+		var zeroValue T
+		return zeroValue, result.Error
+	}
+	return object, nil
+}
+
 // GetObjects is a method that gets all objects from the database
 func (m *DBModel[T]) GetObjects() ([]T, error) {
 	var objects []T

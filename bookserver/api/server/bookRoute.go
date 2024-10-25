@@ -3,6 +3,7 @@ package server
 import (
 	"xpJain.co/bookserver/db"
 	"xpJain.co/bookserver/models"
+	"xpJain.co/bookserver/server/middleware"
 )
 
 func BookRouteInit() {
@@ -19,6 +20,8 @@ func BookRouteInitize() {
 	bookDB := db.NewModel("books", &models.Book{})
 
 	route := New_GormRouteHandler(bookDB)
+
+	route.router.Use(middleware.Authentication)
 
 	route.InitService()
 

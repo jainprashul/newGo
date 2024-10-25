@@ -18,9 +18,13 @@ func main() {
 
 	// Create a new router
 	router := server.Router
+	
+	// Initialize the auth route
+	server.AuthRouteInit()
 
 	// Initialize the book route
 	server.BookRouteInitize()
+
 
 	// GET environment variable PORT 
 	PORT := os.Getenv("PORT")

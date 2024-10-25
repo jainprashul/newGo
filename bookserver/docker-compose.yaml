@@ -33,7 +33,9 @@ services:
     ports:
       - "5050:80"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+        
 
   proxy:
     image: nginx
